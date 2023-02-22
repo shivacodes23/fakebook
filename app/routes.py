@@ -1,55 +1,31 @@
-from app import app
-from flask import render_template
+from app import app, db
+from flask import render_template, request, redirect, url_for
+from .models import User, Post
 
 
-derek = {
-    'id': 1,
-    'first_name': 'Derek',
-    'last_name': 'Hawkins',
-    'is_active': False
-}
-lucas = {
-    'id': 2,
-    'first_name': 'Lucas',
-    'last_name': 'Lang',
-    'is_active': True
-}
-user = {
-    'first_name': 'Derek',
-    'last_name': 'Hawkins'
-}
-posts = [{
-    'id': 1,
-    'body': 'This is the first post',
-    'user': lucas
-},
-    {
-        'id': 2,
-        'body': 'This is the second post',
-        'user': lucas
-},
-    {
-        'id': 3,
-        'body': 'This is the third post',
-        'user': derek
-}
-]
-
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
+    if request.method == 'POST':
+        p = Post(
+            body=request.form.get('post_body'),
+            user_id = 1
+            )
+        db.session.add(p)
+        db.session.commit()    
+        return redirect(url_for('home'))
     context = {
-        'posts': posts
+        'posts': Post.query.order_by(Post.date_created.desc()).all()
     }
     return render_template('home.html', **context)
 
 
 @app.route('/blog/<id>')
 def blog_single(id):
-    for p in posts:
-        if p['id'] == int(id):
-            post = p
-            break
+    # for p in posts:
+    #     if p['id'] == int(id):
+    #         post = p
+    #         break
+    post = Post.query.get(id)
     context = {
         'post': post
     }

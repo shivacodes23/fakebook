@@ -2,17 +2,19 @@ from flask import request, render_template, redirect, url_for
 from app import db
 from .import bp as app
 from .models import Post
+from flask_login import current_user
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    print(current_user.is_anonymous)
     if request.method == 'POST':
         p = Post(
             body=request.form.get('post_body'),
-            user_id=1
+            user_id=1 #going to have to make the user id's dynamic
         )
         db.session.add(p)
         db.session.commit()
-        return redirect(url_for('home'))
+        return redirect(url_for('blog.home'))
     context = {
         'posts': Post.query.order_by(Post.date_created.desc()).all()
     }

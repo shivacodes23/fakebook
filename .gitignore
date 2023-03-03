@@ -1,3 +1,5 @@
 .env
 main-old.py
 venv
+*.pyc
+__pycache__
